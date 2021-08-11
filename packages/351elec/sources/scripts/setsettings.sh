@@ -436,6 +436,33 @@ if [ "${CORE}" == "gambatte" ]; then
 	fi
 fi
 
+if [ "${CORE}" == 'cap32' ]; then
+	CAP32CONFDIR='/storage/.config/retroarch/config/cap32/'
+	[[ ! -d "${CAP32CONFDIR}" ]] && mkdir "${CAP32CONFDIR}"
+	CAP32CONF="${CAP32CONFDIR}/cap32.opt"
+	[[ ! -f "${CAP32CONF}" ]] && touch "${CAP32CONF}"
+	CAP32BACKUP="${CAP32CONFDIR}/cap32_cpc.bak"
+	
+	CAP32MODEL=$(grep '^cap32_model' "${CAP32CONF}" || echo 'cap32_model = "6128"')
+	CAP32AUTORUN=$(grep "^cap32_autorun" "${CAP32CONF}" || echo 'cap32_autorun = "enabled"')
+
+	if [ "${PLATFORM}" == 'gx4000' ]; then
+		#GX4000 needs a plus model and autorun off specifically, ordinary CPC doesn't need anything special
+		[[ ! -f "${CAP32BACKUP}" ]] && touch "${CAP32BACKUP}"
+		echo "${CAP32MODEL}" > "${CAP32BACKUP}"
+		echo "${CAP32AUTORUN}" > "${CAP32BACKUP}"
+		
+		sed -i '/^cap32_autorun\s*=/ccap32_autorun = "disabled"' "${CAP32CONF}"
+		sed -i '/^cap32_model\s*=/ccap32_model = "6128+"' "${CAP32CONF}"
+	elif [ -f "${CAP32BACKUP}" ]; then
+		#Restore user's original settings if we are going back to CPC
+		sed -i '/^cap32_autorun\s*=/d' "${CAP32CONF}"
+		sed -i '/^cap32_model\s*=/d' "${CAP32CONF}"
+		cat "${CAP32BACKUP}" >> "${CAP32CONF}"
+		rm "${CAP32BACKUP}"		
+	fi
+fi
+
 # We set up the controller index
 #sed -i "/input_libretro_device_p1/d" ${RACONF}
 CONTROLLERS="$@"
