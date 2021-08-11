@@ -450,7 +450,7 @@ if [ "${CORE}" == 'cap32' ]; then
 		#GX4000 needs a plus model and autorun off specifically, ordinary CPC doesn't need anything special
 		[[ ! -f "${CAP32BACKUP}" ]] && touch "${CAP32BACKUP}"
 		echo "${CAP32MODEL}" > "${CAP32BACKUP}"
-		echo "${CAP32AUTORUN}" > "${CAP32BACKUP}"
+		echo "${CAP32AUTORUN}" >> "${CAP32BACKUP}"
 		
 		sed -i '/^cap32_autorun\s*=/ccap32_autorun = "disabled"' "${CAP32CONF}"
 		sed -i '/^cap32_model\s*=/ccap32_model = "6128+"' "${CAP32CONF}"
